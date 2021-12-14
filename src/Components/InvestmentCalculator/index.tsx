@@ -1,8 +1,22 @@
-import { BaseTextFieldProps, TextField } from "@mui/material";
+import {
+  BaseTextFieldProps,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import { MutableRefObject, SetStateAction, useRef, useState } from "react";
-import { LineChart, CartesianGrid, XAxis, YAxis, Legend, Line, Tooltip } from "recharts";
-import { generateMonthlyDataPoints } from "./InvestmentCalculatorHelper";
+import {
+  LineChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  Line,
+  Tooltip,
+} from "recharts";
+import { generateInvestmentProgression } from "./InvestmentCalculatorHelper";
 
 export interface IDataPoint {
   name: string;
@@ -11,7 +25,8 @@ export interface IDataPoint {
 }
 
 interface IState {
-  dataPointsMonthly: IDataPoint[];
+  dataPoints: IDataPoint[];
+  chartDisplayMode: "monthly" | "yearly";
 }
 
 function convertToInt(
@@ -30,11 +45,9 @@ function getCalculateButton(
   monthlyInvestmentRef: MutableRefObject<BaseTextFieldProps | undefined>,
   yearlyPerformanceRef: MutableRefObject<BaseTextFieldProps | undefined>,
   periodRef: MutableRefObject<BaseTextFieldProps | undefined>,
-  setState: {
-    (value: SetStateAction<IState>): void;
-    (arg0: { dataPointsMonthly: IDataPoint[] }): void;
-  }
-) {
+  state: IState,
+  setState: { (value: SetStateAction<IState>): void; (arg0: IState): void }
+): JSX.Element {
   return (
     <Button
       variant="outlined"
@@ -44,13 +57,14 @@ function getCalculateButton(
         const yearlyPerformance = convertToInt(yearlyPerformanceRef);
         const period = convertToInt(periodRef);
 
-        const dataPoints = generateMonthlyDataPoints(
+        const dataPoints = generateInvestmentProgression(
           originalSum,
           monthlyInvestment,
           yearlyPerformance,
-          period
+          period,
+          state.chartDisplayMode === "monthly"
         );
-        setState({ dataPointsMonthly: dataPoints });
+        setState({ ...state, dataPoints: dataPoints });
       }}
     >
       Calculate
@@ -59,32 +73,40 @@ function getCalculateButton(
 }
 
 function getCharts(state: IState) {
-  if (state.dataPointsMonthly.length === 0) {
+  if (state.dataPoints.length === 0) {
     return null;
-  } else {
-    return (
-      <LineChart
-        width={730}
-        height={250}
-        data={state.dataPointsMonthly}
-        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line type="monotone" dataKey="withInvestment" stroke="#8884d8" />
-        <Line type="monotone" dataKey="withoutInvestment" stroke="#82ca9d" />
-      </LineChart>
-    );
   }
+
+  return (
+    <LineChart
+      width={730}
+      height={250}
+      data={state.dataPoints}
+      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Line type="monotone" dataKey="withInvestment" stroke="#8884d8" />
+      <Line type="monotone" dataKey="withoutInvestment" stroke="#82ca9d" />
+    </LineChart>
+  );
 }
 
 export function InvestmentCalculator() {
   const [state, setState] = useState<IState>({
-    dataPointsMonthly: [] as IDataPoint[],
+    dataPoints: [] as IDataPoint[],
+    chartDisplayMode: "monthly",
   });
+
+  const chartDisplayModeChange = (event: SelectChangeEvent) => {
+    setState({
+      ...state,
+      chartDisplayMode: event.target.value as "monthly" | "yearly",
+    });
+  };
 
   const originalSumRef = useRef<BaseTextFieldProps>();
   const monthlyInvestmentRef = useRef<BaseTextFieldProps>();
@@ -121,12 +143,24 @@ export function InvestmentCalculator() {
         required
       />
       <br />
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={state.chartDisplayMode}
+        label="Age"
+        onChange={chartDisplayModeChange}
+      >
+        <MenuItem value={"monthly"}>Monthly</MenuItem>
+        <MenuItem value={"yearly"}>Yearly</MenuItem>
+      </Select>
+      <br />
       <br />
       {getCalculateButton(
         originalSumRef,
         monthlyInvestmentRef,
         yearlyPerformanceRef,
         periodRef,
+        state,
         setState
       )}
       {getCharts(state)}
