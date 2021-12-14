@@ -4,7 +4,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-import { InvestmentCalculator } from './InvestmentCalculator';
+import { InvestmentCalculator } from './Components/InvestmentCalculator';
 
 interface TabPanelProps {
   children?: React.ReactNode;
