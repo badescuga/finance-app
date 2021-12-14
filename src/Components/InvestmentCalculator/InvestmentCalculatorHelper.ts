@@ -26,8 +26,8 @@ export function generateInvestmentProgression(
         if (generateMonthlyPoints === true || month === 12) {
           dataPoints.push({
             name: `${year}-${month}`,
-            withInvestment: cashWithInvestment,
-            withoutInvestment: cashWithoutInvestment,
+            withInvestment: Math.floor( cashWithInvestment),
+            withoutInvestment: Math.floor(cashWithoutInvestment),
           });
         }
       }
@@ -40,8 +40,8 @@ export function generateInvestmentProgression(
 
       dataPoints.push({
         name: `Year ${year}`,
-        withInvestment: cashWithInvestment,
-        withoutInvestment: cashWithoutInvestment,
+        withInvestment: Math.floor(cashWithInvestment),
+        withoutInvestment: Math.floor(cashWithoutInvestment),
       });
     }
   }

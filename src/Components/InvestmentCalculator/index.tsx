@@ -92,8 +92,8 @@ function getCharts(state: IState) {
       <YAxis />
       <Tooltip />
       <Legend />
-      <Line type="monotone" dataKey="withInvestment" stroke="#8884d8" />
-      <Line type="monotone" dataKey="withoutInvestment" stroke="#82ca9d" />
+      <Line type="monotone" name="Investing" dataKey="withInvestment" stroke="#8884d8" />
+      <Line type="monotone" name="Without Investing" dataKey="withoutInvestment" stroke="#82ca9d" />
     </LineChart>
   );
 }
