@@ -1,5 +1,6 @@
 import {
   BaseTextFieldProps,
+  Checkbox,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -27,6 +28,7 @@ export interface IDataPoint {
 interface IState {
   dataPoints: IDataPoint[];
   chartDisplayMode: "monthly" | "yearly";
+  capitalizeMonthlyInvestment: boolean;
 }
 
 function convertToInt(
@@ -62,7 +64,8 @@ function getCalculateButton(
           monthlyInvestment,
           yearlyPerformance,
           period,
-          state.chartDisplayMode === "monthly"
+          state.chartDisplayMode === "monthly",
+          state.capitalizeMonthlyInvestment
         );
         setState({ ...state, dataPoints: dataPoints });
       }}
@@ -99,6 +102,7 @@ export function InvestmentCalculator() {
   const [state, setState] = useState<IState>({
     dataPoints: [] as IDataPoint[],
     chartDisplayMode: "monthly",
+    capitalizeMonthlyInvestment: true
   });
 
   const chartDisplayModeChange = (event: SelectChangeEvent) => {
@@ -108,23 +112,29 @@ export function InvestmentCalculator() {
     });
   };
 
+  const capitalizeMonthlyInvestmentChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setState({...state, capitalizeMonthlyInvestment: event.target.checked});
+  };
+
+
   const originalSumRef = useRef<BaseTextFieldProps>();
   const monthlyInvestmentRef = useRef<BaseTextFieldProps>();
   const yearlyPerformanceRef = useRef<BaseTextFieldProps>();
-  const periodRef = useRef();
+  const periodRef = useRef<BaseTextFieldProps>();
+
 
   return (
     <div>
       <TextField
         inputRef={originalSumRef}
-        label="Original cash"
+        label="Original cash ($)"
         variant="outlined"
         required
       />
       <br />
       <TextField
         inputRef={monthlyInvestmentRef}
-        label="Monthly cash investment"
+        label="Monthly cash investment ($)"
         variant="outlined"
         required
       />
@@ -147,12 +157,13 @@ export function InvestmentCalculator() {
         labelId="demo-simple-select-label"
         id="demo-simple-select"
         value={state.chartDisplayMode}
-        label="Age"
+        label="Data display mode"
         onChange={chartDisplayModeChange}
       >
-        <MenuItem value={"monthly"}>Monthly</MenuItem>
-        <MenuItem value={"yearly"}>Yearly</MenuItem>
-      </Select>
+        <MenuItem value={"monthly"}>Display Monthly Points</MenuItem>
+        <MenuItem value={"yearly"}>Display Yearly Points</MenuItem>
+      </Select><br/>
+      Capitalize Monthly: <Checkbox checked={state.capitalizeMonthlyInvestment} onChange={capitalizeMonthlyInvestmentChanged} />
       <br />
       <br />
       {getCalculateButton(

@@ -5,27 +5,44 @@ export function generateInvestmentProgression(
   monthlyCashInvestment: number,
   yearlyPerformancePercent: number,
   periodInYears: number,
-  isMonthly: boolean
+  generateMonthlyPoints: boolean,
+  capitalizeMonthlyInvestment: boolean
 ): IDataPoint[] {
   const dataPoints: IDataPoint[] = [];
+  let year = 0;
+  let month = 0;
+
   let cashWithInvestment = originalCash;
   let cashWithoutInvestment = originalCash;
 
-  let monthlyPerformancePercent = yearlyPerformancePercent / 12 / 100;
+  if (capitalizeMonthlyInvestment) {
+    const monthlyPerformancePercent = 1 + (yearlyPerformancePercent / 12 / 100);
 
-  for (var year = 0; year < periodInYears; year++) {
-    for (var month = 1; month <= 12; month++) {
-      cashWithoutInvestment += monthlyCashInvestment;
-      cashWithInvestment =
-        (cashWithInvestment + monthlyCashInvestment) *
-        (1 + monthlyPerformancePercent);
-      if (isMonthly === true || month === 12) {
-        dataPoints.push({
-          name: `${year}-${month}`,
-          withInvestment: cashWithInvestment,
-          withoutInvestment: cashWithoutInvestment,
-        });
+    for (year = 0; year < periodInYears; year++) {
+      for (month = 1; month <= 12; month++) {
+        cashWithoutInvestment += monthlyCashInvestment;
+        cashWithInvestment =
+          (cashWithInvestment + monthlyCashInvestment) * monthlyPerformancePercent;
+        if (generateMonthlyPoints === true || month === 12) {
+          dataPoints.push({
+            name: `${year}-${month}`,
+            withInvestment: cashWithInvestment,
+            withoutInvestment: cashWithoutInvestment,
+          });
+        }
       }
+    }
+  } else {
+    for (year = 0; year < periodInYears; year++) {
+      cashWithoutInvestment += monthlyCashInvestment * 12;
+      cashWithInvestment += monthlyCashInvestment * 12;
+      cashWithInvestment *= 1 + yearlyPerformancePercent / 100;
+
+      dataPoints.push({
+        name: `Year ${year}`,
+        withInvestment: cashWithInvestment,
+        withoutInvestment: cashWithoutInvestment,
+      });
     }
   }
 
