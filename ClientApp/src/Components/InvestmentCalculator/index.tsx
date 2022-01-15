@@ -17,6 +17,7 @@ import {
   Line,
   Tooltip,
 } from "recharts";
+import { convertToInt } from "../../jsHelpers/uiHelpers";
 import { generateInvestmentProgression } from "./InvestmentCalculatorHelper";
 
 export interface IDataPoint {
@@ -29,17 +30,6 @@ interface IState {
   dataPoints: IDataPoint[];
   chartDisplayMode: "monthly" | "yearly";
   capitalizeMonthlyInvestment: boolean;
-}
-
-function convertToInt(
-  compRef: MutableRefObject<BaseTextFieldProps | undefined>
-): number {
-  const value = compRef!.current!.value as string;
-
-  if (value === "") {
-    return 0;
-  }
-  return parseInt(value);
 }
 
 function getCalculateButton(
