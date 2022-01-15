@@ -5,6 +5,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 import { InvestmentCalculator } from './Components/InvestmentCalculator';
+import { DiscountedCashflowStockAnalysis } from './Components/DiscountedCashflowStockAnalysis';
+import { StockCalculator } from "./Components/StockCalculator";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -14,7 +16,6 @@ interface TabPanelProps {
 
 interface IState {
   currentTab: number;
-  weatherData: any;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -44,6 +45,7 @@ function a11yProps(index: number) {
   };
 }
 
+// .NET Backend API Call
 async function populateWeatherData() {
   const response = await fetch('weatherforecast');
   const data = await response.json();
@@ -52,7 +54,7 @@ async function populateWeatherData() {
 }
 
 export function MainComponent() {
-  const [state, setState] = React.useState<IState>({currentTab: 0, weatherData: undefined});
+  const [state, setState] = React.useState<IState>({currentTab: 0});
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setState({...state, currentTab: newValue});
@@ -70,19 +72,18 @@ export function MainComponent() {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={state.currentTab} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Investment Calculator" {...a11yProps(0)} />
-          <Tab label="Item Two" {...a11yProps(1)} />
-          <Tab label="Item Three" {...a11yProps(2)} />
+          <Tab label="[TODO] Discounted Cashflow analysis" {...a11yProps(1)} />
+          <Tab label="[TODO] Stock Calculator" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <TabPanel value={state.currentTab} index={0}>
       <InvestmentCalculator />
       </TabPanel>
       <TabPanel value={state.currentTab} index={1}>
-        Item Two
-        {state.weatherData}
+      <DiscountedCashflowStockAnalysis />
       </TabPanel>
       <TabPanel value={state.currentTab} index={2}>
-        Item Three
+        <StockCalculator />
       </TabPanel>
     </Box>
   );
